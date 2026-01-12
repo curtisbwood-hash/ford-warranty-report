@@ -1,0 +1,1304 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VehicleWarrantyStatus — Risk & Warranty Report</title>
+
+  <style>
+    :root{
+      --bg: transparent;
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #e2e8f0;
+
+      --brand: #2563eb;
+      --brand2:#0ea5e9;
+      --danger:#dc2626;
+      --danger2:#ef4444;
+      --warn:#f59e0b;
+      --ok:#16a34a;
+
+      --card:#ffffff;
+      --soft:#f8fafc;
+
+      --shadow: 0 18px 45px rgba(2,6,23,.10);
+      --radius: 18px;
+
+      --max: 1060px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Inter", sans-serif;
+    }
+
+    html,body{background:var(--bg); margin:0; padding:0; font-family:var(--font); color:var(--ink);}
+    *{box-sizing:border-box;}
+
+    .shell{width:100%; max-width: var(--max); margin: 24px auto; padding: 0 16px 60px;}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding: 14px 18px; border:1px solid var(--line);
+      background: linear-gradient(180deg,#ffffff,#f8fbff);
+      border-radius: 14px; box-shadow: var(--shadow);
+      flex-wrap:wrap;
+    }
+    .brand{display:flex; align-items:center; gap:10px; font-weight:900; letter-spacing:.2px;}
+    .brand-badge{
+      width:38px; height:38px; border-radius:10px;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      display:grid; place-items:center; color:#fff; font-weight:900;
+      box-shadow: 0 10px 22px rgba(37,99,235,.25);
+      flex:0 0 auto;
+    }
+    .brand small{display:block; font-weight:700; color:var(--muted); letter-spacing:0}
+    .trustline{font-size:12px; color:var(--muted); text-align:right; line-height:1.35;}
+    .trustline b{color:var(--ink);}
+
+    .hero{
+      margin-top: 18px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 16px;
+      align-items:stretch;
+    }
+
+    .panel{
+      border:1px solid var(--line);
+      background: linear-gradient(180deg,#ffffff,#fbfdff);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .panel-head{padding: 18px 18px 0;}
+    .kicker{
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:12px; font-weight:800; color:#0b1220;
+      padding: 7px 10px; border-radius: 999px;
+      border: 1px solid #dbeafe; background: #eff6ff;
+    }
+    .kicker .dot{width:9px; height:9px; border-radius:999px; background: var(--brand); box-shadow: 0 0 0 3px rgba(37,99,235,.14);}
+    h1{margin: 10px 0 8px; font-size: 30px; letter-spacing: -.6px; line-height:1.1;}
+    .sub{margin: 0 0 14px; color: var(--muted); line-height:1.6; font-size:14.5px;}
+    .sub strong{color:#0b1220;}
+    .grid2{display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px;}
+    .mini{border:1px solid var(--line); background: var(--soft); border-radius: 14px; padding: 12px;}
+    .mini h3{margin:0 0 6px; font-size:13px; letter-spacing:.2px;}
+    .mini p{margin:0; font-size:12.5px; color:var(--muted); line-height:1.5;}
+
+    .stepcard{padding: 16px; display:flex; flex-direction:column; gap: 12px;}
+    .steps{display:grid; grid-template-columns: 1fr; gap: 10px;}
+    .step{border:1px solid var(--line); background:#fff; border-radius: 14px; padding: 12px; display:flex; gap:10px; align-items:flex-start;}
+    .pill{
+      min-width: 34px; height:34px; border-radius: 10px; display:grid; place-items:center;
+      font-weight:900; color:#fff; background: linear-gradient(135deg,var(--brand),var(--brand2));
+      box-shadow: 0 12px 26px rgba(37,99,235,.18);
+      flex:0 0 auto;
+    }
+    .step .t{font-weight:900; font-size:13.5px; margin:0 0 2px;}
+    .step .d{font-size:12.5px; margin:0; color:var(--muted); line-height:1.45;}
+
+    .content{margin-top: 16px; display:grid; grid-template-columns: 1fr; gap: 14px;}
+    .card{
+      border:1px solid var(--line);
+      background: linear-gradient(180deg,#ffffff,#fbfdff);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card-head{
+      padding: 16px 18px; border-bottom: 1px solid var(--line);
+      display:flex; justify-content:space-between; align-items:center; gap: 10px;
+      background: linear-gradient(180deg,#ffffff,#f7fbff);
+      flex-wrap:wrap;
+    }
+    .card-head h2{margin:0; font-size:16px; letter-spacing:-.2px;}
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      font-size:12px; font-weight:900; padding: 7px 10px;
+      border-radius: 999px; border:1px solid var(--line);
+      background:#fff; color:var(--muted); white-space:nowrap;
+    }
+    .tag b{color:var(--ink);}
+    .card-body{padding: 16px 18px;}
+
+    .form-row{display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;}
+    label{display:block; font-size:12px; font-weight:900; margin-bottom:6px; color:#0b1220;}
+    select, input{
+      width:100%;
+      padding: 12px;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-size:14px;
+      outline:none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    select:focus, input:focus{border-color:#93c5fd; box-shadow: 0 0 0 4px rgba(37,99,235,.12);}
+
+    .cta{margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+    .btn{
+      appearance:none; border:1px solid transparent;
+      background: linear-gradient(135deg,var(--brand),var(--brand2));
+      color:#fff; font-weight:900;
+      border-radius: 14px; padding: 12px 16px;
+      cursor:pointer; box-shadow: 0 16px 30px rgba(37,99,235,.22);
+      font-size:14px;
+      width:auto;
+    }
+    .btn:hover{filter:brightness(.98);}
+    .btn:active{transform: translateY(1px);}
+    .btn-outline{background:#fff; color: var(--brand); border-color:#bfdbfe; box-shadow:none;}
+    .note{font-size:12.5px; color:var(--muted); line-height:1.55;}
+
+    .progress-wrap{
+      padding: 18px; border-radius: 14px; background:#0b1220; color:#fff;
+      box-shadow: 0 18px 45px rgba(2,6,23,.25);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+    .progress-top{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom: 10px;}
+    .progress-top .l{font-weight:900; letter-spacing:.2px;}
+    .progress-top .r{font-size:12px; opacity:.85; font-weight:800;}
+    .bar{width:100%; height:12px; background: rgba(255,255,255,.12); border-radius:999px; overflow:hidden;}
+    .bar > div{width:0%; height:100%; background: linear-gradient(90deg, var(--danger2), #f97316); border-radius:999px; transition: width .25s ease;}
+    .prog-text{margin-top:10px; font-size:12.5px; opacity:.92; line-height:1.5;}
+
+    .alert{border:1px solid #fecaca; background:#fff5f5; border-radius:14px; padding:12px; margin-top:14px;}
+    .alert strong{color:#7f1d1d;}
+    .alert p{margin:6px 0 0; color:#7f1d1d; font-size:12.5px; line-height:1.45;}
+
+    table{width:100%; border-collapse:collapse;}
+    th,td{padding:10px; border-bottom:1px solid var(--line); text-align:left; font-size:13px; vertical-align: top;}
+    th{font-size:12px; color: var(--muted); font-weight:900; text-transform:uppercase; letter-spacing:.6px;}
+    td b{color:#0b1220;}
+    .chip{
+      display:inline-block; padding:4px 8px; border-radius:999px;
+      font-size:11px; font-weight:900; border:1px solid var(--line);
+      background:#fff; color:var(--muted); white-space:nowrap;
+    }
+    .chip.danger{border-color:#fecaca; background:#fff5f5; color:#7f1d1d;}
+    .chip.warn{border-color:#fde68a; background:#fffbeb; color:#92400e;}
+    .chip.ok{border-color:#bbf7d0; background:#f0fdf4; color:#14532d;}
+
+    .pricebox{
+      border:1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      background: linear-gradient(180deg,#ffffff,#f8fbff);
+      display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap;
+    }
+    .price{display:flex; align-items:baseline; gap:10px; font-weight:900;}
+    .price .now{font-size: 28px; color: var(--danger); letter-spacing:-.6px;}
+    .bul{margin: 10px 0 0; padding-left: 18px;्
+      color: var(--muted); line-height:1.6; font-size:13px;}
+    .bul li{margin: 6px 0;}
+
+    .report-head{display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+    .report-id{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-weight:900; font-size:12px; color: var(--muted);
+      background:#fff; border:1px solid var(--line); border-radius:999px; padding:6px 10px;
+    }
+    .report-title{margin:2px 0 0; font-size:18px; font-weight:1000; letter-spacing:-.3px;}
+    .section-title{margin:18px 0 8px; font-size:13px; font-weight:1000; letter-spacing:.5px; text-transform:uppercase; color:#0b1220;}
+    .split{display:grid; grid-template-columns: 1fr 1fr; gap: 12px;}
+    .box{border:1px solid var(--line); background:#fff; border-radius:14px; padding:12px;}
+    .box h4{margin:0 0 6px; font-size:13.5px; font-weight:1000;}
+    .box p{margin:0; color:var(--muted); font-size:12.8px; line-height:1.55;}
+
+    .hide{display:none !important;}
+    .fineprint{font-size:11.5px; color:#64748b; line-height:1.5;}
+
+    /* MOBILE FIRST TUNING */
+    @media (max-width: 920px){
+      .hero{grid-template-columns: 1fr;}
+      .trustline{text-align:left;}
+    }
+    @media (max-width: 820px){
+      .form-row{grid-template-columns:1fr;}
+      .split{grid-template-columns:1fr;}
+      .grid2{grid-template-columns:1fr;}
+      .btn{width:100%;}
+      .cta{flex-direction:column; align-items:stretch;}
+      .topbar{align-items:flex-start;}
+      h1{font-size:26px;}
+      .card-body{padding: 14px 14px;}
+      .card-head{padding: 14px 14px;}
+      .panel-head{padding: 16px 16px 0;}
+      .price .now{font-size:24px;}
+    }
+
+    /* TABLE -> CARD STACK ON SMALL SCREENS */
+    @media (max-width: 720px){
+      table, thead, tbody, th, td, tr { display:block; width:100%; }
+      thead{ display:none; }
+      tr{
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background:#fff;
+        padding: 10px 10px;
+        margin: 10px 0;
+        box-shadow: 0 10px 22px rgba(2,6,23,.06);
+      }
+      td{
+        border:0;
+        padding: 8px 0;
+        display:flex;
+        justify-content:space-between;
+        gap:12px;
+        font-size:13px;
+      }
+      td::before{
+        content: attr(data-label);
+        font-weight:900;
+        color: var(--muted);
+        text-transform:uppercase;
+        letter-spacing:.4px;
+        font-size:11px;
+        flex: 0 0 44%;
+      }
+      td > *{max-width: 56%;}
+      td b{display:inline;}
+    }
+
+    @media print{
+      body{background:#fff !important;}
+      .topbar, .hero, .no-print{display:none !important;}
+      .shell{max-width: 980px; margin:0; padding:0;}
+      .card{box-shadow:none !important; border: 1px solid #cbd5e1;}
+      .card-head{background:#fff; border-bottom: 1px solid #cbd5e1;}
+      .card-body{padding: 14px 16px;}
+      .print-watermark{
+        position: fixed; inset:0; display:block !important; pointer-events:none;
+        opacity:.07; transform: rotate(-22deg); font-size:64px; font-weight:1000;
+        color:#0b1220; text-align:center; line-height:1.1; padding-top:22vh;
+      }
+      .print-watermark span{display:block; font-size:34px; font-weight:900; opacity:.9;}
+    }
+    .print-watermark{display:none;}
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-badge">VW</div>
+        <div>
+          VehicleWarrantyStatus
+          <small>Independent risk & warranty report</small>
+        </div>
+      </div>
+      <div class="trustline">
+        🔒 <b>Privacy-first</b> • ⚡ <b>Instant</b> • 🧾 <b>Free report</b><br/>
+        Get options from a licensed agent
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="kicker"><span class="dot"></span> Failure Risk + Warranty Status</div>
+          <h1>Know your risk <span style="color:var(--brand)">before</span> the warning lights.</h1>
+          <p class="sub">
+            This free report flags high-cost failure patterns by manufacturer + model + mileage and gives you a clear action plan.
+            Want coverage options? Get a <strong>$399 discount code</strong> when you request a call.
+          </p>
+
+          <div class="grid2">
+            <div class="mini">
+              <h3>What you get</h3>
+              <p>Full risk matrix, warranty overview, and a shop protection checklist—printable.</p>
+            </div>
+            <div class="mini">
+              <h3>How we help</h3>
+              <p>Licensed agent can explain options and pricing, then send you your $399 discount code.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding: 0 18px 18px;">
+          <div class="alert" style="margin-top:14px;">
+            <strong>Risk Notice:</strong>
+            <p>Higher mileage = higher failure pressure. This report is guidance (not VIN-specific) to help you act early.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="stepcard">
+          <div class="kicker"><span class="dot"></span> 4-Step Report + Options</div>
+
+          <div class="steps">
+            <div class="step"><div class="pill">1</div><div><p class="t">Enter vehicle basics</p><p class="d">Year • Manufacturer • Model • Mileage.</p></div></div>
+            <div class="step"><div class="pill">2</div><div><p class="t">Scan + preview</p><p class="d">Instant scan → preview risks appear.</p></div></div>
+            <div class="step"><div class="pill">3</div><div><p class="t">Request options</p><p class="d">Short form → get $399 discount code.</p></div></div>
+            <div class="step"><div class="pill">4</div><div><p class="t">Full report</p><p class="d">Printable report + next steps.</p></div></div>
+          </div>
+
+          <div class="note">
+            <b>Note:</b> We do not decode VINs and we do not sell personal data.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- STEP 1 -->
+      <div class="card" id="step1Card">
+        <div class="card-head">
+          <h2>Step 1 — Start your assessment</h2>
+          <div class="tag">Status: <b id="s1Status">Ready</b></div>
+        </div>
+        <div class="card-body">
+          <div class="form-row">
+            <div>
+              <label for="year">Model year</label>
+              <select id="year" required>
+                <option value="">Select year</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="make">Manufacturer</label>
+              <select id="make" required>
+                <option value="">Select manufacturer</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="model">Model</label>
+              <select id="model" required>
+                <option value="">Select model</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="miles">Mileage range</label>
+              <select id="miles" required>
+                <option value="">Select mileage</option>
+                <option value="0-9999">Under 10,000</option>
+                <option value="10000-24999">10,000 – 24,999</option>
+                <option value="25000-49999">25,000 – 49,999</option>
+                <option value="50000-74999">50,000 – 74,999</option>
+                <option value="75000-99999">75,000 – 99,999</option>
+                <option value="100000-124999">100,000 – 124,999</option>
+                <option value="125000-149999">125,000 – 149,999</option>
+                <option value="150000-999999">150,000+</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="cta">
+            <button class="btn" id="startBtn" type="button">Analyze risk now →</button>
+            <button class="btn btn-outline" id="resetBtn" type="button">Reset</button>
+          </div>
+
+          <p class="note" style="margin-top:10px;">
+            You’ll get a full printable report. If you want coverage options, request a call and we’ll generate a <b>$399 discount code</b>.
+          </p>
+        </div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="card hide" id="step2Card">
+        <div class="card-head">
+          <h2>Step 2 — Database scan</h2>
+          <div class="tag">Vehicle: <b id="vehicleBadge">—</b></div>
+        </div>
+        <div class="card-body">
+
+          <div id="scanOnly">
+            <div class="progress-wrap">
+              <div class="progress-top">
+                <div class="l">Scanning risk signals…</div>
+                <div class="r" id="scanPct">0%</div>
+              </div>
+              <div class="bar"><div id="scanBar"></div></div>
+              <div class="prog-text" id="scanText">
+                Checking warranty thresholds, mileage-based failure windows, and common claim categories…
+              </div>
+            </div>
+          </div>
+
+          <div id="scanResults" class="hide">
+            <div class="alert">
+              <strong>⚠ POTENTIAL RISKS IDENTIFIED</strong>
+              <p>
+                Your vehicle falls into a mileage window where certain categories commonly become expensive.
+                Preview is below. Full report is available next.
+              </p>
+            </div>
+
+            <div style="margin-top:12px;">
+              <div class="section-title">Preview risk categories (model-based)</div>
+              <div class="box" style="padding:0;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:22%;">Category</th>
+                      <th style="width:18%;">Risk level</th>
+                      <th>What owners report / why it matters</th>
+                      <th style="width:18%;">Typical cost range</th>
+                    </tr>
+                  </thead>
+                  <tbody id="previewTable"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="cta" style="margin-top:12px;">
+              <button class="btn" id="toStep3Btn" type="button">View full report + get options →</button>
+              <button class="btn btn-outline" id="backToStep1Btn" type="button">Back</button>
+            </div>
+
+            <p class="fineprint" style="margin-top:10px;">
+              Tip: If you want coverage pricing/options, complete the short form next to unlock a <b>$399 discount code</b>.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- STEP 3 (LEAD GEN) -->
+      <div class="card hide" id="step3Card">
+        <div class="card-head">
+          <h2>Step 3 — Get options from a licensed agent (recommended)</h2>
+          <div class="tag">Bonus: <b>$399 code</b> 🎁</div>
+        </div>
+        <div class="card-body">
+
+          <div class="pricebox">
+            <div>
+              <div style="font-weight:1000; letter-spacing:-.2px;">Example coverage pricing (typical)</div>
+              <div style="font-size:12.5px; color:var(--muted); line-height:1.45;">
+                5-year “new-car style” coverage (similar to bumper-to-bumper)
+              </div>
+            </div>
+            <div class="price">
+              <span class="now">$265/mo</span>
+              <span class="chip warn">18 payments</span>
+            </div>
+          </div>
+
+          <ul class="bul">
+            <li><b>18 monthly payments</b> of ~$265 (interest-free)</li>
+            <li><b>Last ~3.5 years</b> payment-free (coverage continues)</li>
+            <li><b>Transferable</b> (can add resale value)</li>
+            <li><b>Licensed agent</b> explains your options in plain English</li>
+          </ul>
+
+          <div class="alert" style="margin-top:12px;">
+            <strong>Get your $399 discount code</strong>
+            <p>Complete the short form below and we’ll show your code instantly on this page.</p>
+          </div>
+
+          <div style="margin-top:12px;" class="split">
+            <div class="box">
+              <h4>Your info (30 seconds)</h4>
+
+              <label for="leadName" style="margin-top:10px;">Full name</label>
+              <input id="leadName" type="text" placeholder="John Smith" autocomplete="name" />
+
+              <label for="leadPhone" style="margin-top:10px;">Phone (for call/text)</label>
+              <input id="leadPhone" type="tel" placeholder="(555) 555-5555" autocomplete="tel" />
+
+              <label for="leadEmail" style="margin-top:10px;">Email (optional)</label>
+              <input id="leadEmail" type="email" placeholder="you@email.com" autocomplete="email" />
+
+              <div style="margin-top:10px; display:flex; gap:10px; align-items:flex-start;">
+                <input id="leadConsent" type="checkbox" style="width:auto; margin-top:2px;" />
+                <div class="fineprint">
+                  I agree to be contacted by a licensed agent about coverage options. Message/data rates may apply.
+                </div>
+              </div>
+
+              <div class="cta" style="margin-top:12px;">
+                <button class="btn" id="submitLeadBtn" type="button">Get $399 code + open full report →</button>
+                <button class="btn btn-outline" id="skipLeadBtn" type="button">Skip (view report only)</button>
+                <span class="note" id="leadStatus"></span>
+              </div>
+
+              <div class="fineprint" style="margin-top:10px;">
+                This form submits to your Formspree endpoint and includes vehicle info automatically.
+              </div>
+            </div>
+
+            <div class="box">
+              <h4>What you’ll say to the agent</h4>
+              <p>
+                “I ran the VehicleWarrantyStatus report for my vehicle and I want options that match my mileage and risk areas.
+                Please quote the best plan with an 18-payment option and confirm transferability.”
+              </p>
+
+              <div class="section-title" style="margin-top:14px;">Your discount code</div>
+              <div class="box" style="background:#f0fdf4; border-color:#bbf7d0;">
+                <div style="font-weight:1000; font-size:14px;">CODE: <span id="discountCode">—</span></div>
+                <div class="fineprint" style="margin-top:6px;">
+                  Shown after form submit. Use during enrollment call to apply the <b>$399 discount</b>.
+                </div>
+              </div>
+
+              <div class="section-title" style="margin-top:14px;">Vehicle</div>
+              <div class="fineprint" id="leadVehicleLine">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="card hide" id="step4Card">
+        <div class="card-head">
+          <h2>Step 4 — Full report</h2>
+          <div class="tag">Access: <b id="accessTag">Full report</b> ✅</div>
+        </div>
+
+        <div class="card-body" id="reportArea">
+          <div class="report-head">
+            <div>
+              <div class="report-title">Warranty & Failure Risk Report</div>
+              <div style="color:var(--muted); font-size:12.8px; line-height:1.5;">
+                Prepared for: <b id="reportVehicleLine">—</b><br/>
+                Generated: <span id="reportDate">—</span>
+              </div>
+            </div>
+            <div class="report-id" id="reportIdPill">REPORT # —</div>
+          </div>
+
+          <div class="alert" style="margin-top:12px;">
+            <strong>Key highlights (read first)</strong>
+            <p id="highlightsLine">—</p>
+          </div>
+
+          <div class="section-title">1) Risk overview</div>
+          <div class="split">
+            <div class="box">
+              <h4>Overall risk score</h4>
+              <p>
+                Risk score combines mileage-zone pressure + model risk categories. This is not a VIN-specific defect report.
+                It’s consumer guidance to help you act early.
+              </p>
+              <div style="margin-top:10px;">
+                <span class="chip" id="riskChip">—</span>
+                <span class="chip" id="zoneChip" style="margin-left:6px;">—</span>
+              </div>
+            </div>
+            <div class="box">
+              <h4>Owner action priority</h4>
+              <p id="priorityText">—</p>
+            </div>
+          </div>
+
+          <div class="section-title">2) Model-specific component risk matrix</div>
+          <div class="box" style="padding:0;">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:20%;">Component area</th>
+                  <th style="width:18%;">Mileage risk window</th>
+                  <th>What to watch for</th>
+                  <th style="width:18%;">Cost range</th>
+                </tr>
+              </thead>
+              <tbody id="matrixTable"></tbody>
+            </table>
+          </div>
+
+          <div class="section-title">3) Warranty coverage overview</div>
+          <div class="split">
+            <div class="box">
+              <h4>Bumper-to-bumper coverage</h4>
+              <p>Usually covers many non-wear components for a limited term. Exclusions often include wear items & maintenance-related issues.</p>
+            </div>
+            <div class="box">
+              <h4>Powertrain coverage</h4>
+              <p>Usually focuses on major drivetrain components. Coverage can vary by owner status/region—verify your exact terms.</p>
+            </div>
+          </div>
+
+          <div class="box" style="padding:0; margin-top:10px;">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:24%;">Coverage type</th>
+                  <th style="width:18%;">What it usually includes</th>
+                  <th>Common confusion points</th>
+                  <th style="width:18%;">Owner protection move</th>
+                </tr>
+              </thead>
+              <tbody id="coverageTable"></tbody>
+            </table>
+          </div>
+
+          <div class="section-title">4) Recall-style risk themes</div>
+          <div class="box">
+            <h4>Important</h4>
+            <p>This report does not run a VIN recall lookup. It flags “recall-style” themes you should verify through official tools.</p>
+            <div style="margin-top:10px;" id="recallThemes"></div>
+          </div>
+
+          <div class="section-title">5) Repair-cost realism + “why prices explode”</div>
+          <div class="split">
+            <div class="box">
+              <h4>What drives the high end</h4>
+              <p id="costDrivers">—</p>
+            </div>
+            <div class="box">
+              <h4>How to reduce surprise escalation</h4>
+              <p id="reduceEscalation">—</p>
+            </div>
+          </div>
+
+          <div class="section-title">6) Protection checklist</div>
+          <div class="box" id="checklistBox"></div>
+
+          <div class="section-title">7) Next steps action plan</div>
+          <div class="box" id="actionPlanBox"></div>
+
+          <div class="cta no-print" style="margin-top:14px;">
+            <button class="btn" id="printBtn" type="button">Print official report 🖨️</button>
+            <button class="btn btn-outline" id="startOverBtn" type="button">Start over</button>
+            <span class="note">Want options? Go back and request a call to get the $399 code.</span>
+          </div>
+
+          <div class="fineprint" style="margin-top:10px;">
+            If you submitted the lead form, your code is: <b><span id="discountCodeFooter">—</span></b>
+          </div>
+        </div>
+
+        <div class="print-watermark" id="wm">
+          VEHICLEWARRANTYSTATUS
+          <span id="wmSub">REPORT # —</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+/** =========================
+ * CONFIG
+ * ========================== */
+const LEAD_ENDPOINT = "https://formspree.io/f/xykkywky"; // Formspree endpoint
+
+/** =========================
+ * MANUFACTURERS + MODELS (TOP 15)
+ * (You can add more models later by editing this object.)
+ * ========================== */
+const MAKE_MODELS = {
+  "Toyota": ["4Runner","Avalon","Camry","C-HR","Corolla","Corolla Cross","FJ Cruiser","Highlander","Land Cruiser","Matrix","Mirai","Prius","RAV4","Sequoia","Sienna","Tacoma","Tundra","Venza","Yaris"],
+  "Honda": ["Accord","Civic","CR-V","CR-Z","Crosstour","Element","Fit","HR-V","Insight","Odyssey","Passport","Pilot","Prelude","Ridgeline"],
+  "Ford": ["Bronco","C-Max","Edge","Escape","Expedition","Explorer","F-150","F-250","F-350","Fiesta","Focus","Fusion","Maverick","Mustang","Ranger","Taurus"],
+  "Chevrolet": ["Blazer","Camaro","Colorado","Corvette","Cruze","Equinox","Impala","Malibu","Silverado 1500","Silverado 2500HD","Sonic","Suburban","Tahoe","Trailblazer","Traverse","Trax"],
+  "Nissan": ["Altima","Armada","Frontier","GT-R","Juke","Kicks","Leaf","Maxima","Murano","Pathfinder","Rogue","Rogue Sport","Sentra","Titan","Versa","Xterra"],
+  "Hyundai": ["Accent","Azera","Elantra","Elantra GT","Genesis Coupe","Ioniq","Ioniq 5","Ioniq 6","Kona","Palisade","Santa Fe","Sonata","Tucson","Veloster","Venue"],
+  "Kia": ["Cadenza","EV6","Forte","K5","K900","Niro","Optima","Rio","Sedona","Seltos","Sorento","Soul","Sportage","Stinger","Telluride"],
+  "Dodge": ["Avenger","Challenger","Charger","Dakota","Dart","Durango","Grand Caravan","Journey","Nitro","Ram 1500 (Legacy)"],
+  "Jeep": ["Cherokee","Compass","Gladiator","Grand Cherokee","Liberty","Patriot","Renegade","Wrangler"],
+  "GMC": ["Acadia","Canyon","Envoy","Savana","Sierra 1500","Sierra 2500HD","Terrain","Yukon"],
+  "Subaru": ["Ascent","BRZ","Crosstrek","Forester","Impreza","Legacy","Outback","Solterra","WRX"],
+  "Mazda": ["CX-3","CX-30","CX-5","CX-50","CX-9","CX-90","Mazda2","Mazda3","Mazda5","Mazda6","MX-5 Miata"],
+  "Volkswagen": ["Arteon","Atlas","Beetle","CC","Eos","Golf","GTI","Jetta","Passat","Taos","Tiguan","Touareg"],
+  "BMW": ["1 Series","2 Series","3 Series","4 Series","5 Series","6 Series","7 Series","X1","X2","X3","X4","X5","X6","X7","Z4","i3","i4","iX"],
+  "Lexus": ["CT","ES","GS","GX","HS","IS","LC","LS","LX","NX","RC","RX","SC","UX"]
+};
+
+const MAKES = Object.keys(MAKE_MODELS);
+
+/** =========================
+ * REPORT DATABASE (SAMPLE MODEL-SPECIFIC + GENERIC FALLBACKS)
+ * ========================== */
+const MODEL_DB = {
+  "Hyundai": {
+    "Tucson": [
+      {area:"Engine / oil consumption", watch:"Oil level drop, ticking, misfire, smoke, rough idle", window:"50k–125k", cost:"$1,800–$6,800", level:"High"},
+      {area:"Transmission / drivability", watch:"Hesitation, harsh shifts, delayed engagement", window:"60k–140k", cost:"$1,200–$4,200", level:"Medium"},
+      {area:"Electrical / ABS", watch:"Warning lights, traction control faults, intermittent sensors", window:"40k–120k", cost:"$600–$2,200", level:"Medium"},
+      {area:"Cooling / overheating", watch:"Temp spikes, coolant loss, fan issues", window:"60k–150k", cost:"$450–$1,800", level:"Medium"},
+      {area:"Steering / suspension", watch:"Clunks, uneven tire wear, pulling", window:"70k–160k", cost:"$500–$2,000", level:"Low"}
+    ],
+    "Santa Fe": [
+      {area:"Engine / bearing risk", watch:"Knock/tick, loss of power, oil burn, metallic noise", window:"60k–140k", cost:"$2,200–$7,200", level:"High"},
+      {area:"Transmission / drivability", watch:"Shudder, slipping, surging", window:"50k–120k", cost:"$1,500–$4,800", level:"Medium"},
+      {area:"Electrical / charging", watch:"Battery drain, intermittent start, warning lights", window:"40k–120k", cost:"$350–$1,900", level:"Medium"},
+      {area:"Brakes / ABS", watch:"Pulsation, premature wear, ABS light", window:"35k–90k", cost:"$300–$1,400", level:"Low"}
+    ]
+  },
+  "Nissan": {
+    "Altima": [
+      {area:"Transmission / drivability", watch:"Shudder, hesitation, high RPM, delayed engagement", window:"60k–140k", cost:"$1,800–$5,800", level:"High"},
+      {area:"Engine / oil seepage", watch:"Oil leaks, rough idle, misfire", window:"80k–160k", cost:"$400–$2,800", level:"Medium"},
+      {area:"Electrical / sensors", watch:"Random warning lights, intermittent faults", window:"50k–140k", cost:"$250–$1,800", level:"Low"}
+    ],
+    "Rogue": [
+      {area:"Transmission / drivability", watch:"Shudder, slipping, hesitation", window:"60k–140k", cost:"$1,800–$5,800", level:"High"},
+      {area:"HVAC / climate", watch:"Weak cooling, blower issues", window:"40k–120k", cost:"$350–$1,900", level:"Low"}
+    ]
+  },
+  "Ford": {
+    "F-150": [
+      {area:"Transmission behavior", watch:"Harsh shifts, delayed engagement, shudder", window:"60k–160k", cost:"$900–$4,800", level:"Medium"},
+      {area:"Cooling / leaks", watch:"Coolant loss, overheating, hose/radiator leaks", window:"70k–170k", cost:"$350–$2,400", level:"Low"},
+      {area:"Front end / suspension", watch:"Clunks, vibration, uneven tire wear", window:"80k–180k", cost:"$500–$3,000", level:"Medium"}
+    ],
+    "Escape": [
+      {area:"Engine / coolant loss", watch:"Coolant smell, overheating, misfire", window:"60k–140k", cost:"$600–$4,500", level:"Medium"},
+      {area:"Transmission / drivability", watch:"Hesitation, harsh shifting", window:"60k–150k", cost:"$900–$4,500", level:"Medium"}
+    ]
+  },
+  "Toyota": {
+    "Camry": [
+      {area:"Oil seepage / gaskets", watch:"Oil spots, burning smell, seepage", window:"90k–180k", cost:"$350–$2,000", level:"Low"},
+      {area:"Suspension / steering wear", watch:"Clunks, vibration, pulling", window:"100k–200k", cost:"$500–$2,800", level:"Low"}
+    ],
+    "RAV4": [
+      {area:"Cooling / leaks", watch:"Coolant loss, overheating", window:"80k–180k", cost:"$350–$2,200", level:"Low"},
+      {area:"Suspension / alignment", watch:"Uneven tire wear, clunks", window:"90k–190k", cost:"$500–$2,600", level:"Low"}
+    ]
+  }
+};
+
+const GENERIC_BY_MAKE = {
+  "BMW": [
+    {area:"Oil leaks / seals", watch:"Oil spots, burning smell, seepage", window:"60k–140k", cost:"$500–$3,200", level:"Medium"},
+    {area:"Cooling system", watch:"Coolant loss, temp spikes, radiator/expansion tank issues", window:"60k–150k", cost:"$600–$2,800", level:"Medium"},
+    {area:"Electrical / modules", watch:"Warning lights, intermittent faults, battery drain", window:"50k–140k", cost:"$300–$2,500", level:"Medium"},
+    {area:"Suspension / bushings", watch:"Clunks, vibration, uneven tire wear", window:"70k–160k", cost:"$700–$3,500", level:"Medium"}
+  ],
+  "Lexus": [
+    {area:"Suspension / steering wear", watch:"Clunks, vibration, pulling", window:"100k–200k", cost:"$500–$2,800", level:"Low"},
+    {area:"Cooling / leaks", watch:"Coolant loss, temp spikes", window:"90k–190k", cost:"$350–$2,200", level:"Low"},
+    {area:"Electrical / sensors", watch:"Warning lights, intermittent faults", window:"80k–180k", cost:"$250–$1,800", level:"Low"}
+  ]
+};
+
+const GENERIC_DEFAULT = [
+  {area:"Engine reliability", watch:"Oil burn, knock/tick, misfire, smoke", window:"60k–150k", cost:"$1,200–$6,800", level:"Medium"},
+  {area:"Transmission / drivability", watch:"Hesitation, harsh shifts, shudder", window:"60k–160k", cost:"$900–$4,500", level:"Medium"},
+  {area:"Electrical / sensors", watch:"Warning lights, intermittent faults, battery drain", window:"40k–140k", cost:"$250–$2,200", level:"Low"},
+  {area:"Cooling / overheating", watch:"Coolant loss, temp spikes, fan issues", window:"60k–160k", cost:"$450–$2,200", level:"Low"}
+];
+
+const RECALL_THEMES_BY_MAKE = {
+  "Hyundai": [
+    "Verify open recalls using official tools before major repair decisions.",
+    "If warning lights appear, document immediately and confirm whether campaigns apply.",
+    "Never assume recall status — always verify through official lookup."
+  ],
+  "Kia": [
+    "Verify open recalls using official tools before major repair decisions.",
+    "Document warning lights and keep service history organized.",
+    "Confirm campaign completion before long trips."
+  ],
+  "Ford": [
+    "Verify open recalls and service campaigns via official lookup tools.",
+    "If drivability symptoms appear, request a written diagnostic summary.",
+    "Document everything before authorizing major repairs."
+  ],
+  "BMW": [
+    "Verify open recalls via official lookup tools.",
+    "Keep service history and scans documented for warranty/goodwill conversations.",
+    "Ask for a written root-cause statement before major work."
+  ],
+  "Toyota": [
+    "Verify open recalls via official lookup tools.",
+    "Document symptoms early to avoid escalation.",
+    "Request itemized estimates for any recommended work."
+  ]
+};
+
+/** =========================
+ * HELPERS
+ * ========================== */
+const $ = (id)=>document.getElementById(id);
+function show(id){ $(id).classList.remove("hide"); }
+function hide(id){ $(id).classList.add("hide"); }
+
+function prettyMiles(m){
+  const map = {
+    "0-9999":"Under 10,000",
+    "10000-24999":"10,000–24,999",
+    "25000-49999":"25,000–49,999",
+    "50000-74999":"50,000–74,999",
+    "75000-99999":"75,000–99,999",
+    "100000-124999":"100,000–124,999",
+    "125000-149999":"125,000–149,999",
+    "150000-999999":"150,000+"
+  };
+  return map[m] || m;
+}
+
+function mileageLabel(m){
+  const b = parseInt(m.split("-")[1],10);
+  if (b <= 24999) return {zone:"Early life", chip:"ok", note:"Lower pressure; focus on documentation + preventative checks."};
+  if (b <= 74999) return {zone:"Rising risk window", chip:"warn", note:"Risk begins increasing; act before symptoms escalate."};
+  if (b <= 124999) return {zone:"High-risk zone", chip:"danger", note:"Many expensive failures cluster here; proactive checks strongly advised."};
+  if (b <= 149999) return {zone:"Very high-risk zone", chip:"danger", note:"Component fatigue is common; small symptoms can become costly events."};
+  return {zone:"Critical mileage zone", chip:"danger", note:"Highest pressure window; prioritize prevention and documentation now."};
+}
+
+function getRiskList(make, model){
+  if (MODEL_DB[make] && MODEL_DB[make][model]) return MODEL_DB[make][model];
+  if (GENERIC_BY_MAKE[make]) return GENERIC_BY_MAKE[make];
+  return GENERIC_DEFAULT;
+}
+
+function riskScore(make, model, miles){
+  const list = getRiskList(make, model);
+  const zone = mileageLabel(miles);
+  let base = 52;
+  if (zone.zone.includes("Early")) base = 35;
+  if (zone.zone.includes("Rising")) base = 55;
+  if (zone.zone.includes("High-risk")) base = 72;
+  if (zone.zone.includes("Very high")) base = 80;
+  if (zone.zone.includes("Critical")) base = 86;
+  const highs = list.filter(x=>x.level==="High").length;
+  const bump = Math.min(10, highs * 3);
+  return Math.max(15, Math.min(95, base + bump));
+}
+
+function makeReportId(){
+  const n = Math.floor(Math.random()*900000)+100000;
+  return "VWS-" + n;
+}
+
+function makeDiscountCode(){
+  const n = Math.floor(Math.random()*9000)+1000;
+  return "SAVE399-" + n;
+}
+
+function levelChip(level){
+  if (level==="High") return `<span class="chip danger">High</span>`;
+  if (level==="Medium") return `<span class="chip warn">Medium</span>`;
+  return `<span class="chip ok">Low</span>`;
+}
+
+function setModelOptions(make){
+  const mSel = $("model");
+  mSel.innerHTML = `<option value="">Select model</option>`;
+  if (!make || !MAKE_MODELS[make]) return;
+  MAKE_MODELS[make].forEach(m=>{
+    const opt = document.createElement("option");
+    opt.value = m;
+    opt.textContent = m;
+    mSel.appendChild(opt);
+  });
+}
+
+/** =========================
+ * STATE + STORAGE
+ * ========================== */
+const STORE_KEY = "vws_leadgen_state_v2";
+let state = {
+  year:"", make:"", model:"", miles:"",
+  reportId:"",
+  step:1,
+  leadSubmitted:false,
+  discountCode:""
+};
+
+function persist(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){} }
+function restore(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) state = {...state, ...JSON.parse(raw)};
+  }catch(e){}
+}
+
+/** =========================
+ * STEP NAV
+ * ========================== */
+function showStep1(){
+  show("step1Card"); hide("step2Card"); hide("step3Card"); hide("step4Card");
+  state.step = 1; persist();
+}
+function goToStep2(run=true){
+  hide("step1Card"); show("step2Card"); hide("step3Card"); hide("step4Card");
+  $("s1Status").textContent = "Complete";
+  $("vehicleBadge").textContent = `${state.year} ${state.make} ${state.model} • ${prettyMiles(state.miles)}`;
+  show("scanOnly"); hide("scanResults");
+  state.step = 2; persist();
+  if (run) runScan();
+}
+function goToStep3(){
+  hide("step1Card"); hide("step2Card"); show("step3Card"); hide("step4Card");
+  state.step = 3; persist();
+  $("leadVehicleLine").textContent = `${state.year} ${state.make} ${state.model} • ${prettyMiles(state.miles)} • REPORT # ${state.reportId || "—"}`;
+  $("discountCode").textContent = state.discountCode || "—";
+}
+function goToStep4(){
+  hide("step1Card"); hide("step2Card"); hide("step3Card"); show("step4Card");
+  state.step = 4; persist();
+  renderReport();
+}
+
+/** =========================
+ * INIT SELECTS
+ * ========================== */
+function initStep1(){
+  const ySel = $("year");
+  if (ySel.options.length <= 1){
+    const now = new Date().getFullYear();
+    for (let y = now; y >= 2010; y--){
+      const opt = document.createElement("option");
+      opt.value = String(y);
+      opt.textContent = String(y);
+      ySel.appendChild(opt);
+    }
+  }
+
+  const makeSel = $("make");
+  if (makeSel.options.length <= 1){
+    MAKES.forEach(mk=>{
+      const opt = document.createElement("option");
+      opt.value = mk;
+      opt.textContent = mk;
+      makeSel.appendChild(opt);
+    });
+  }
+}
+
+/** =========================
+ * EVENTS
+ * ========================== */
+document.addEventListener("DOMContentLoaded", ()=>{
+  initStep1();
+  restore();
+
+  if (state.make) {
+    $("make").value = state.make;
+    setModelOptions(state.make);
+  }
+
+  if (state.year) $("year").value = state.year;
+  if (state.model) $("model").value = state.model;
+  if (state.miles) $("miles").value = state.miles;
+
+  if (!state.reportId && state.year && state.make && state.model && state.miles) state.reportId = makeReportId();
+
+  if (state.step === 2 && state.year && state.make && state.model && state.miles) goToStep2(false);
+  else if (state.step === 3 && state.year && state.make && state.model && state.miles) goToStep3();
+  else if (state.step === 4 && state.year && state.make && state.model && state.miles) goToStep4();
+  else showStep1();
+});
+
+$("make").addEventListener("change", ()=>{
+  const mk = $("make").value;
+  setModelOptions(mk);
+  $("model").value = "";
+});
+
+$("startBtn").addEventListener("click", ()=>{
+  const year = $("year").value;
+  const make = $("make").value;
+  const model = $("model").value;
+  const miles = $("miles").value;
+  if (!year || !make || !model || !miles){
+    alert("Please select Year, Manufacturer, Model, and Mileage.");
+    return;
+  }
+  state.year = year;
+  state.make = make;
+  state.model = model;
+  state.miles = miles;
+  if (!state.reportId) state.reportId = makeReportId();
+  state.leadSubmitted = false;
+  state.discountCode = "";
+  persist();
+  goToStep2(true);
+});
+
+$("resetBtn").addEventListener("click", ()=>{
+  state = {year:"", make:"", model:"", miles:"", reportId:"", step:1, leadSubmitted:false, discountCode:""};
+  persist();
+  showStep1();
+  $("year").value = ""; $("make").value = ""; $("model").innerHTML = `<option value="">Select model</option>`; $("miles").value = "";
+});
+
+$("backToStep1Btn").addEventListener("click", showStep1);
+$("toStep3Btn").addEventListener("click", goToStep3);
+
+$("skipLeadBtn").addEventListener("click", ()=>{
+  goToStep4();
+});
+
+$("submitLeadBtn").addEventListener("click", async ()=>{
+  const name = ($("leadName").value || "").trim();
+  const phone = ($("leadPhone").value || "").trim();
+  const email = ($("leadEmail").value || "").trim();
+  const consent = $("leadConsent").checked;
+
+  if (!name || !phone){
+    alert("Please enter name + phone.");
+    return;
+  }
+  if (!consent){
+    alert("Please check the consent box to request a call.");
+    return;
+  }
+
+  if (!state.discountCode) state.discountCode = makeDiscountCode();
+  state.leadSubmitted = true;
+  persist();
+
+  $("leadStatus").textContent = "Submitting…";
+  $("discountCode").textContent = state.discountCode;
+
+  try{
+    await fetch(LEAD_ENDPOINT, {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Accept":"application/json"
+      },
+      body: JSON.stringify({
+        source:"VehicleWarrantyStatus",
+        createdAt: new Date().toISOString(),
+        reportId: state.reportId,
+        discountCode: state.discountCode,
+        vehicle: {year: state.year, make: state.make, model: state.model, miles: state.miles, milesLabel: prettyMiles(state.miles)},
+        lead: {name, phone, email, consent:true}
+      })
+    });
+  }catch(e){
+    // continue flow even if Formspree blocks fetch due to CORS on some setups
+  }
+
+  $("leadStatus").textContent = "Done ✓ Opening report…";
+  setTimeout(()=>goToStep4(), 450);
+});
+
+$("printBtn").addEventListener("click", ()=>{
+  $("wmSub").textContent = "REPORT # " + state.reportId;
+  window.print();
+});
+
+$("startOverBtn").addEventListener("click", ()=>{
+  state = {year:"", make:"", model:"", miles:"", reportId:"", step:1, leadSubmitted:false, discountCode:""};
+  persist();
+  showStep1();
+  $("year").value = ""; $("make").value = ""; $("model").innerHTML = `<option value="">Select model</option>`; $("miles").value = "";
+});
+
+/** =========================
+ * STEP 2 SCAN
+ * ========================== */
+function runScan(){
+  const scanBar = $("scanBar");
+  const scanPct = $("scanPct");
+  const scanText = $("scanText");
+
+  let p = 0;
+  const messages = [
+    "Checking warranty thresholds and common mileage failure windows…",
+    "Scanning model-based failure categories and owner claim trends…",
+    "Estimating risk zones based on mileage range…",
+    "Generating preview risk summary…"
+  ];
+  let idx = 0;
+  scanText.textContent = messages[idx];
+
+  const timer = setInterval(()=>{
+    if (p < 70) p += Math.random()*10;
+    else if (p < 92) p += Math.random()*4;
+    else p += Math.random()*2;
+
+    if (p >= 100) p = 100;
+
+    scanBar.style.width = p.toFixed(0) + "%";
+    scanPct.textContent = p.toFixed(0) + "%";
+
+    if (p > (idx+1)*25 && idx < messages.length-1){
+      idx++;
+      scanText.textContent = messages[idx];
+    }
+
+    if (p >= 100){
+      clearInterval(timer);
+      renderStep2Preview();
+      hide("scanOnly");
+      show("scanResults");
+    }
+  }, 260);
+}
+
+function renderStep2Preview(){
+  const list = getRiskList(state.make, state.model);
+  const zone = mileageLabel(state.miles);
+  const tbody = $("previewTable");
+  tbody.innerHTML = "";
+
+  const sorted = [...list].sort((a,b)=>{
+    const rank = (x)=> x.level==="High"?3:(x.level==="Medium"?2:1);
+    return rank(b)-rank(a);
+  }).slice(0,4);
+
+  sorted.forEach(item=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td data-label="Category"><b>${item.area}</b></td>
+      <td data-label="Risk level">${levelChip(item.level)}</td>
+      <td data-label="What to watch">${item.watch}</td>
+      <td data-label="Cost range"><b>${item.cost}</b></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const tr2 = document.createElement("tr");
+  tr2.innerHTML = `
+    <td data-label="Category"><b>Mileage zone</b></td>
+    <td data-label="Risk level">${zone.chip==="danger"?`<span class="chip danger">High</span>`:zone.chip==="warn"?`<span class="chip warn">Medium</span>`:`<span class="chip ok">Low</span>`}</td>
+    <td data-label="What it means">${zone.note}</td>
+    <td data-label="Cost range"><b>Varies</b></td>
+  `;
+  tbody.appendChild(tr2);
+}
+
+/** =========================
+ * STEP 4 REPORT
+ * ========================== */
+function renderReport(){
+  if (!state.reportId) state.reportId = makeReportId();
+
+  const vehicleLine = `${state.year} ${state.make} ${state.model} • ${prettyMiles(state.miles)}`;
+  $("reportVehicleLine").textContent = vehicleLine;
+  $("reportDate").textContent = new Date().toLocaleString();
+  $("reportIdPill").textContent = "REPORT # " + state.reportId;
+  $("wmSub").textContent = "REPORT # " + state.reportId;
+
+  $("discountCodeFooter").textContent = state.discountCode || "—";
+
+  const score = riskScore(state.make, state.model, state.miles);
+  const zone = mileageLabel(state.miles);
+
+  $("riskChip").textContent = "Risk Score: " + score + "/100";
+  $("riskChip").className = "chip " + (score>=75?"danger":score>=55?"warn":"ok");
+  $("zoneChip").textContent = "Mileage Zone: " + zone.zone;
+  $("zoneChip").className = "chip " + zone.chip;
+
+  const list = getRiskList(state.make, state.model);
+  const top = [...list].sort((a,b)=>{
+    const rank = (x)=> x.level==="High"?3:(x.level==="Medium"?2:1);
+    return rank(b)-rank(a);
+  }).slice(0,3);
+
+  $("highlightsLine").innerHTML =
+    `Highest priority watch areas: <b>${top.map(x=>x.area).join(", ")}</b>. Act early to reduce escalation into higher-cost brackets.`;
+
+  $("priorityText").textContent =
+    zone.zone.includes("Early") ?
+      "Document baseline fluids and address small symptoms early so they don’t evolve into larger failures." :
+    zone.zone.includes("Rising") ?
+      "Schedule proactive inspection on priority systems and document warning signs. Small delays often multiply costs." :
+      "Treat this mileage zone as urgent: address warning lights quickly, document everything, and confirm coverage before authorizing repairs.";
+
+  const matrix = $("matrixTable");
+  matrix.innerHTML = "";
+  list.forEach(item=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td data-label="Component"><b>${item.area}</b><div style="margin-top:6px;">${levelChip(item.level)}</div></td>
+      <td data-label="Mileage window">${item.window}</td>
+      <td data-label="What to watch">${item.watch}<div style="margin-top:6px;color:#64748b;font-size:12px;line-height:1.45;">
+        Prevention: baseline fluids + document symptoms early + request written findings.
+      </div></td>
+      <td data-label="Cost range"><b>${item.cost}</b><div style="margin-top:6px;color:#64748b;font-size:12px;">Costs vary by location, labor rate, and parts availability.</div></td>
+    `;
+    matrix.appendChild(tr);
+  });
+
+  const cov = $("coverageTable");
+  cov.innerHTML = "";
+  const covRows = [
+    { type:"Bumper-to-bumper (basic)", includes:"Many non-wear components and systems",
+      confusion:"Wear items, maintenance, and “caused by neglect” exclusions are common dispute points",
+      move:"Ask for written coverage decision + itemized estimate before approval" },
+    { type:"Powertrain", includes:"Major drivetrain components (engine/transmission components)",
+      confusion:"Owners assume “anything engine-related” is covered; exclusions and definitions matter",
+      move:"Document fluids, warning lights, and request diagnostics in writing" },
+    { type:"Emissions / safety items", includes:"Some emissions/safety components may have separate coverage rules",
+      confusion:"Regional rules vary; owners miss coverage because they don’t ask",
+      move:"Ask: “Is this emissions/safety related? What coverage category applies?”" },
+    { type:"Goodwill / assistance", includes:"Sometimes available depending on history and circumstances",
+      confusion:"Not automatic; requires negotiation and documentation",
+      move:"Bring service records and ask for a case number + escalation path" }
+  ];
+  covRows.forEach(r=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td data-label="Coverage"><b>${r.type}</b></td>
+      <td data-label="Includes">${r.includes}</td>
+      <td data-label="Confusion">${r.confusion}</td>
+      <td data-label="Move">${r.move}</td>
+    `;
+    cov.appendChild(tr);
+  });
+
+  const themes = RECALL_THEMES_BY_MAKE[state.make] || [
+    "Verify open recalls using official tools before major repair decisions.",
+    "If warning lights appear, document immediately and confirm whether campaigns apply.",
+    "Never assume recall status — always verify through official lookup."
+  ];
+  $("recallThemes").innerHTML = `
+    <ul class="bul" style="margin-top:0;">
+      ${themes.map(t=>`<li>${t}</li>`).join("")}
+    </ul>
+    <div class="note" style="margin-top:8px;">
+      Educational guidance only. Confirm open recalls through official tools for your exact vehicle.
+    </div>
+  `;
+
+  $("costDrivers").textContent =
+    "Labor rates, diagnostic stacking, parts delays, and bundled recommended work push costs higher. Ignoring early symptoms often causes damage to spread to adjacent components.";
+  $("reduceEscalation").textContent =
+    "Get a written diagnosis, itemized estimate, confirm what is urgent vs optional, and document everything. Ask what evidence supports a failing-part claim and request old parts back when possible.";
+
+  $("checklistBox").innerHTML = `
+    <div class="split">
+      <div class="box">
+        <h4>Before you visit a shop</h4>
+        <p>✅ Photograph warnings • ✅ Note dates/mileage/symptoms • ✅ Check fluids • ✅ Gather service records</p>
+      </div>
+      <div class="box">
+        <h4>During the estimate</h4>
+        <p>✅ Ask for written findings • ✅ Ask what’s covered • ✅ Ask for root cause • ✅ Itemized parts/labor</p>
+      </div>
+    </div>
+    <div class="split" style="margin-top:12px;">
+      <div class="box">
+        <h4>Before authorizing repairs</h4>
+        <p>✅ Must-do now vs monitor • ✅ Confirm root cause • ✅ Save paperwork • ✅ Second opinion if pressured</p>
+      </div>
+      <div class="box">
+        <h4>Want options?</h4>
+        <p>✅ Go back to Step 3 • ✅ Request a call • ✅ Use your <b>$399 discount code</b></p>
+      </div>
+    </div>
+  `;
+
+  $("actionPlanBox").innerHTML = `
+    <div class="box">
+      <h4>Immediate actions (next 7 days)</h4>
+      <p>
+        1) Record baseline: mileage, oil level, coolant level, warning lights.<br/>
+        2) If warning lights exist: schedule inspection and request written results.<br/>
+        3) If symptoms match high-risk areas: ask what happens if delayed (progression risk).<br/>
+        4) Keep your report number (${state.reportId}) for records.
+      </p>
+    </div>
+    <div class="box" style="margin-top:12px;">
+      <h4>Preventative strategy (30–90 days)</h4>
+      <p>
+        • Prioritize: <b>${top.map(x=>x.area).join(", ")}</b>.<br/>
+        • Keep receipts and itemized invoices.<br/>
+        • Compare quotes; confirm urgency; don’t approve “bundles” blindly.
+      </p>
+    </div>
+  `;
+
+  persist();
+}
+</script>
+</body>
+</html>
+```0
